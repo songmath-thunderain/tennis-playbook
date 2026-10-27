@@ -158,6 +158,23 @@ ul.avoid li::before{content:"✕";position:absolute;left:0;color:var(--fix-ink);
 .useagainst{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;font-size:12.5px;color:var(--muted)}
 .useagainst[hidden]{display:none}
 @media (max-width:1000px){.plan-grid{grid-template-columns:minmax(0,1fr)}}
+.ritem{display:flex;align-items:stretch;gap:2px}
+.ritem>button[data-d]{flex:1;min-width:0}
+.rail .ritem .rm{width:30px;flex:0 0 30px;display:block;padding:0;text-align:center}
+.rail .ritem .cf-b button{width:auto;flex:1;display:block;text-align:center;border:1px solid var(--line);background:var(--panel);padding:6px 10px;border-radius:8px;font-weight:600}
+.rail .ritem .cf-b button.danger{background:var(--fix-ink);border-color:var(--fix-ink);color:var(--panel)}
+.rm{border:0;background:transparent;color:var(--muted);font-size:18px;line-height:1;width:30px;border-radius:8px;opacity:.55}
+.rm:hover,.rm:focus-visible{opacity:1;background:var(--fix-bg);color:var(--fix-ink)}
+.ritem.confirm{flex-direction:column;background:var(--fix-bg);border:1px solid var(--fix-line);border-radius:8px;padding:8px 10px;gap:6px}
+.cf-t{font-size:13px;font-weight:600}
+.cf-b{display:flex;gap:6px}
+.cbtn.danger{background:var(--fix-ink);border-color:var(--fix-ink);color:var(--panel)}
+.restore{border:0;background:transparent;color:var(--accent);font-size:12.5px;font-weight:600;padding:8px 10px;text-align:left}
+.lock{font-family:var(--body);font-size:10.5px;letter-spacing:.06em;border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-left:8px;vertical-align:1px}
+.dhead-row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+#dActions{display:flex;align-items:center;gap:6px;font-size:13px}
+.linkbtn{border:0;background:transparent;color:var(--muted);font-size:12.5px;text-decoration:underline;padding:2px 0}
+.linkbtn:hover{color:var(--fix-ink)}
 .foot{margin-top:28px;font-size:12.5px;color:var(--muted);max-width:90ch}
 @media (max-width:760px){.stage{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.rail{display:none}.mobile-pick{display:block}.notes{grid-template-columns:minmax(0,1fr)}}
@@ -194,7 +211,7 @@ ul.avoid li::before{content:"✕";position:absolute;left:0;color:var(--fix-ink);
     <main style="min-width:0">
       <div class="mobile-pick"><label for="drillSelect" class="tag" style="margin:0 0 6px;display:inline-block">Drill</label><select id="drillSelect"></select></div>
       <section class="drill-head">
-        <div class="eyebrow" id="dEyebrow"></div>
+        <div class="dhead-row"><div class="eyebrow" id="dEyebrow"></div><div id="dActions"></div></div>
         <h2 id="dName"></h2>
         <p id="dSummary"></p>
         <div class="useagainst" id="dPlans"></div>
@@ -499,16 +516,28 @@ const whoLabel=sh=>sh.by==='C'?'Christopher':(sh.who||OPP);
 /* ---------- Rail ---------- */
 function renderRail(){
   $('filters').innerHTML=[['all','All'],['coach',"Coach's list"],['added','Added']].map(([k,l])=>`<button class="tbtn" data-f="${k}" aria-pressed="${filter===k}">${l}</button>`).join('');
-  const list=DRILLS.filter(d=>filter==='all'||d.src===filter);
+  const list=visibleDrills().filter(d=>filter==='all'||d.src===filter);
   const groups=filter==='all'?[['coach',"Coach's list"],['added','Added drills']]:[[filter,'']];
   $('railList').innerHTML=groups.map(([g,t])=>{
     const items=list.filter(d=>d.src===g);
-    return (t?`<div class="group">${t}</div>`:'')+`<ul>${items.map(d=>`<li><button data-d="${d.id}" aria-current="${d===drill}"><span class="nm">${d.name}</span><span class="src">${cOnly(d.variants[0]).length}</span><span class="th">${d.theme}</span></button></li>`).join('')}</ul>`;
+    const li=d=>{
+      const main=`<button data-d="${d.id}" aria-current="${d===drill}"><span class="nm">${d.name}</span><span class="src">${cOnly(d.variants[0]).length}</span><span class="th">${d.theme}</span></button>`;
+      if(d.src!=='added') return `<li>${main}</li>`;
+      if(pendingRm===d.id) return `<li class="ritem confirm"><span class="cf-t">Remove "${d.name}" from Added?</span><span class="cf-b"><button class="cbtn danger" data-rmyes="${d.id}">Remove</button><button class="cbtn" data-rmno>Keep</button></span></li>`;
+      return `<li class="ritem">${main}<button class="rm" data-rm="${d.id}" aria-label="Remove ${d.name}" title="Remove from Added">×</button></li>`;
+    };
+    const restore=g==='added'&&removed.size?`<button class="restore" data-restore>Restore removed drills (${removed.size})</button>`:'';
+    return (t?`<div class="group">${t}${g==='coach'?'<span class="lock">fixed</span>':''}</div>`:'')+`<ul>${items.map(li).join('')}</ul>${restore}`;
   }).join('');
-  $('drillSelect').innerHTML=DRILLS.map(d=>`<option value="${d.id}" ${d===drill?'selected':''}>${d.name} · ${d.theme}</option>`).join('');
+  $('drillSelect').innerHTML=visibleDrills().map(d=>`<option value="${d.id}" ${d===drill?'selected':''}>${d.name} · ${d.theme}</option>`).join('');
 }
 $('filters').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(!b)return;filter=b.dataset.f;renderRail();});
-$('railList').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(b)selectDrill(b.dataset.d);});
+$('railList').addEventListener('click',e=>{
+  const rm=e.target.closest('[data-rm]'); if(rm){pendingRm=rm.dataset.rm;renderRail();return;}
+  const y=e.target.closest('[data-rmyes]'); if(y){removeDrill(y.dataset.rmyes);return;}
+  if(e.target.closest('[data-rmno]')){pendingRm=null;renderRail();return;}
+  if(e.target.closest('[data-restore]')){restoreDrills();return;}
+  const b=e.target.closest('[data-d]');if(b)selectDrill(b.dataset.d);});
 $('drillSelect').addEventListener('change',e=>selectDrill(e.target.value));
 
 function selectDrill(id){
@@ -528,7 +557,7 @@ function geom(sh){
   let nx=dy/len, ny=-dx/len;
   const mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];
   if((mid[0]-VBW/2)*nx>0){nx=-nx;ny=-ny;}
-  const bow=isCurved(sh)?(sh.spin==='lob'?2.4:1.5)*S:0;
+  const bow=isCurved(sh)?(sh.spin==='lob'?2.4:(sh.spin==='heavy'&&sh.pace<=2?2.2:1.5))*S:0;
   return {a,b,c:[mid[0]+nx*bow,mid[1]+ny*bow],len};
 }
 function courtSVG(){
@@ -724,6 +753,10 @@ function renderDrill(){
   $('dName').textContent=d.name; $('dSummary').textContent=d.summary;
   const v=$('variants'); v.hidden=d.variants.length<2;
   v.innerHTML=d.variants.length>1?d.variants.map((x,i)=>`<button class="tbtn" data-v="${i}" aria-pressed="${i===vIdx}">If ${x.label.toLowerCase()}</button>`).join(''):'';
+  const da=$('dActions');
+  da.innerHTML=d.src!=='added'?'':(pendingRm===d.id+'@head'
+    ?`<span class="cf-t">Remove from Added?</span> <button class="cbtn danger" data-hrmyes="${d.id}">Remove</button> <button class="cbtn" data-hrmno>Keep</button>`
+    :`<button class="linkbtn" data-hrm="${d.id}">Remove from Added</button>`);
   const ps=plansUsing(d.id); const dp=$('dPlans'); dp.hidden=!ps.length;
   dp.innerHTML=ps.length?'Use against: '+ps.map(p=>`<button class="tipchip" data-goplan="${p.id}">${p.name}</button>`).join(''):'';
   renderViz(); renderNotes();
@@ -778,10 +811,12 @@ const TIPS = [
   drill:null
 },
 { id:'inside', group:'Groundstrokes', name:'Inside-Out & Inside-In',
-  focus:['3–4 small steps, get around the ball','Shape and topspin on the inside-out','Drive the inside-in down'],
+  focus:['Wider base, stay low, coil early','No huge takeback','Shape and topspin on the inside-out'],
   sections:[
     {h:'Inside-out forehand', items:[
       'Intense footwork: 3–4 small steps, stay turned sideways, get around the ball. Back up if needed to create space.',
+      'Wider base and stay low enough.',
+      'Coil early! Avoid a huge racquet takeback.',
       'Turn the shoulders first, release the left hand early, and watch the takeback.',
       'Swing up. Focus on shape and topspin so the ball bounces high to the opponent\'s backhand.',
       'The body goes toward the direction of the ball; after the shot the body weight faces crosscourt.']},
@@ -892,6 +927,19 @@ const TIPS = [
     {h:'Against a fast serve', items:[
       'Shorten the takeback.',
       'Backhand return: short takeback, contact at waist level, open stance, especially on the deuce side. A closed stance is OK on the ad side.']}
+  ],
+  fix:[], drill:null
+},
+{ id:'approach', group:'Net & Touch', name:'Approach Shot',
+  focus:['Coil, coil, then release','Racquet holds the ball longer','Don\'t jump'],
+  sections:[
+    {h:'Technique', items:[
+      'Feel like the racquet is holding the ball longer through contact.',
+      'Don\'t jump. Stay down through the shot and keep moving forward.',
+      'Create racquet speed early with the coil: coil, coil, and then release.']},
+    {h:'Then', items:[
+      'Follow the line of the ball to the net and split step as he hits.',
+      'First volley: racquet in front, go with it in the direction of the approach.']}
   ],
   fix:[], drill:null
 },
@@ -1057,7 +1105,8 @@ function tipsFor(sh){
   if(/drop|lob/.test(n)) add('drop');
   if(/angle|cross/.test(n)) add('crosscourt');
   if(/down the line|open court/.test(n)) add('dtl');
-  if(/approach|attack|step in/.test(n)) add('short');
+  if(/approach/.test(n)) add('approach');
+  if(/attack|step in/.test(n)) add('short');
   if(/high to his/.test(n)) add('high');
   const side=strokeSide(sh);
   if(side==='fh'&&!out.includes('serve')&&!out.includes('kick')) add('forehand');
@@ -1071,7 +1120,7 @@ function renderTips(){
   $('tipRail').innerHTML=TIP_GROUPS.map(g=>`<div class="group">${g}</div><ul>${TIPS.filter(t=>t.group===g).map(t=>`<li><button data-t="${t.id}" aria-current="${t===tipCur}"><span class="nm">${t.name}</span></button></li>`).join('')}</ul>`).join('');
   $('tipSelect').innerHTML=TIPS.map(t=>`<option value="${t.id}" ${t===tipCur?'selected':''}>${t.name} · ${t.group}</option>`).join('');
   const t=tipCur;
-  const used=DRILLS.filter(d=>d.variants.some(v=>cOnly(v).some(sh=>tipsFor(sh).includes(t.id))));
+  const used=visibleDrills().filter(d=>d.variants.some(v=>cOnly(v).some(sh=>tipsFor(sh).includes(t.id))));
   $('tipBody').innerHTML=`
     <div class="eyebrow">${t.group}</div>
     <h2>${t.name}</h2>
@@ -1269,7 +1318,7 @@ const planFor=id=>PLANS.find(p=>p.id===id);
 const plansUsing=drillId=>PLANS.filter(p=>p.patterns.includes(drillId));
 let planCur=PLANS[1];
 function patternCard(id){
-  const d=DRILLS.find(x=>x.id===id); if(!d) return '';
+  const d=DRILLS.find(x=>x.id===id); if(!d||isHidden(d)) return '';
   return `<button class="pcard" data-gopat="${d.id}"><span class="pc-th">${d.theme}</span><span class="pc-nm">${d.name}</span><span class="pc-sm">${d.summary}</span><span class="pc-go">Open pattern →</span></button>`;
 }
 function renderPlans(){
@@ -1298,9 +1347,123 @@ $('planBody').addEventListener('click',e=>{
 });
 $('dPlans').addEventListener('click',e=>{const b=e.target.closest('[data-goplan]');if(b){setView('plans');selectPlan(b.dataset.goplan);}});
 
+/* ---------- Drills added Oct 27 ---------- */
+// Coach's list: forehand rhythm change (insert after the other coach drills)
+DRILLS.splice(DRILLS.findIndex(d=>d.src==='added'),0,
+{ id:'fh-rhythm-change', name:'Forehand Rhythm Change', theme:'Rhythm', src:'coach',
+  summary:'Two normal forehand crosscourt rally balls at about 80% racquet speed, then one high, heavy topspin forehand crosscourt. Back to normal and repeat.',
+  variants:[{label:'Loop', shots:[
+    s('O','Crosscourt rally ball',[-3.0,22.6],[3.0,2.4],3,[1.0,1.4],'topspin',{who:FEED}),
+    s('C','Forehand cross, normal (80%)',[3.6,0.3],[-3.4,20.8],4,[0.9,1.3],'topspin',{cue:'Normal rally rhythm, about 80% racquet speed. Hit through, solid and deep.'}),
+    s('O','Crosscourt rally ball',[-3.2,22.6],[3.0,2.4],3,[1.0,1.4],'topspin',{who:FEED}),
+    s('C','Forehand cross, normal (80%)',[2.7,0.7],[-2.6,20.2],4,[0.9,1.3],'topspin',{cue:'Same again. Same height, same pace.'}),
+    s('O','Crosscourt rally ball',[-3.0,22.6],[3.0,2.4],3,[1.0,1.4],'topspin',{who:FEED}),
+    s('C','Forehand cross, high heavy topspin',[3.3,-0.7],[-2.2,22.6],2,[2.0,2.8],'heavy',{cue:'Change the rhythm: swing up faster, brush more, ball goes high over the net and bounces high and deep. Then back to normal rally balls.'})
+  ]}],
+  goal:'Change height and spin on purpose without losing the rally.',
+  setup:'Crosscourt forehand rally, deuce court to deuce court, with the coach or a partner.',
+  format:'Continuous: 2 normal + 1 high, then repeat. 3 minutes per set, 4 sets.',
+  success:'The high ball lands past the service line and clearly bounces higher than the normal balls on 8 of 10.',
+  prog:['Coach calls "high" at random instead of every third ball','Same pattern on the backhand side','Partner counterattacks the high ball'],
+  why:'Changing rhythm on purpose breaks the mid-length rallies where he struggles, and the high ball is his safe reset against pace.'
+});
+
+// More added drills
+DRILLS.push(
+{ id:'bh-dtl-change', name:'Backhand Down the Line Change', theme:'Placement', src:'added',
+  summary:'Two backhand crosscourt rally balls, then change direction down the line, higher for time, and recover.',
+  variants:[{label:'Pattern', shots:[
+    s('O','Crosscourt rally ball',[3.0,22.6],[-3.0,2.4],3,[1.0,1.4],'topspin',{who:FEED}),
+    s('C','Backhand cross',[-3.3,0.2],[3.0,21.4],3,[1.2,1.6],'topspin',{cue:'Rally ball, deep to his backhand.'}),
+    s('O','Crosscourt rally ball',[3.2,22.6],[-3.0,2.4],3,[1.0,1.4],'topspin',{who:FEED}),
+    s('C','Backhand cross',[-3.3,0.2],[3.0,21.2],3,[1.2,1.6],'topspin',{cue:'Same ball. Watch for one that lets you set your feet.'}),
+    s('O','Rally ball a bit shorter',[3.0,22.6],[-2.8,3.4],3,[1.0,1.4],'topspin',{who:FEED}),
+    s('C','Backhand down the line',[-2.9,2.8],[-2.8,21.0],3,[1.4,1.8],'heavy',{cue:'Not an attack, just a change of direction: hit it higher so you have time to recover. Less hip rotation, wait for the ball and stay with it. Aim inside the sideline.'})
+  ]}],
+  goal:'Change direction with the backhand without giving away the point.',
+  setup:'Crosscourt backhand rally on the ad side with the coach or a partner.',
+  format:'Sets of 6 patterns. After the down-the-line, play the point out.',
+  success:'Down-the-line ball lands deep and inside the singles line on 7 of 10.',
+  prog:['Christopher chooses when to change direction','Partner can also change direction','Against a lefty partner, make this the default rally pattern'],
+  why:'His backhand is a weapon. Adding a safe change of direction gives him a second option with it, and it is the default rally ball against a left-hander.'
+},
+{ id:'second-serve-attack', name:'Attack the Second Serve', theme:'Return', src:'added',
+  summary:'Step in on the second serve, return deep to his backhand, then hit an inside-out forehand on the reply.',
+  variants:[{label:'Pattern', shots:[
+    s('O','Second serve',[-0.5,24.1],[1.2,8.4],2,[0.9,1.3],'kick',{who:OPP,h0:2.6}),
+    s('C','Forehand return to his backhand',[1.4,1.6],[3.0,21.2],4,[0.8,1.2],'topspin',{start:[1.6,-0.4],cue:'Stand a step inside the baseline. Short backswing, weight forward, take it on the rise to his backhand.'}),
+    s('O','Weak backhand reply',[3.4,22.4],[-1.4,4.0],2,[1.0,1.4],'topspin',{who:OPP}),
+    s('C','Inside-out forehand',[-1.8,3.4],[3.6,20.0],5,[0.6,1.0],'topspin',{cue:'Stay on the attack: around the ball, coil early, inside-out again to his backhand.'})
+  ]}],
+  goal:'Turn the opponent\'s second serve into an attacking chance.',
+  setup:'Partner or coach hits second serves (kick or slice) from the far baseline.',
+  format:'10 points from the deuce side, 10 from the ad side. Play out each point.',
+  success:'Return lands past the service line, on the backhand side, on 7 of 10.',
+  prog:['Backhand return down the line when the serve goes to the backhand','Server mixes first and second serves','Play full return games'],
+  why:'Against a big server one break decides the set. The second serve is the best chance to get it.'
+},
+{ id:'bh-approach-volley', name:'Backhand Approach + First Volley', theme:'Transition', src:'added',
+  summary:'Slice approach down the line off a short backhand, then the first volley around the service line, then finish.',
+  variants:[{label:'Pattern', shots:[
+    s('O','Short ball to backhand',[2.4,22.6],[-2.0,6.6],2,[0.8,1.1],'topspin',{who:FEED}),
+    s('C','Backhand slice approach, down the line',[-2.2,6.2],[-3.0,20.6],3,[0.4,0.7],'slice',{cue:'Racquet high, go high to low, stay sideways. Lean in with body weight; the arm does not need to be fast.'}),
+    s('O','Passing attempt',[-3.2,22.0],[-1.0,8.6],3,[0.3,0.6],'topspin',{who:OPP,end:1.0}),
+    s('C','First volley, backhand',[-1.0,8.6],[2.8,19.6],3,[0.3,0.6],'punch',{h0:1.0,move:[-0.2,10.2],cue:'Split step at the service line. Racquet in front, extend both hands, touch the ball deep and land the feet.'}),
+    s('O','Defensive reply',[3.0,20.6],[-0.6,10.4],2,[0.5,0.8],'slice',{who:OPP,end:1.1}),
+    s('C','Volley put-away',[-0.6,10.4],[-3.4,16.6],4,[0.2,0.5],'punch',{h0:1.1,cue:'Short punch to the open court.'})
+  ]}],
+  goal:'Finish a short backhand at the net instead of rallying it back.',
+  setup:'Coach feeds a short ball to the backhand, then plays passing shots.',
+  format:'5 sets of 6. Play out every point after the approach.',
+  success:'Approach stays low and lands past the service line on 7 of 10.',
+  prog:['Topspin backhand approach instead of slice','Approach crosscourt when the ball is wide','Coach adds lobs'],
+  why:'Against counterpunchers and slicers he needs a way to finish points. The backhand side is the one he approaches from least.'
+},
+{ id:'middle-ball-early', name:'Middle Ball, Take It Early', theme:'Rally construction', src:'added',
+  summary:'A deep ball through the middle: move forward, take it on the rise with the forehand, and hit inside-out.',
+  variants:[{label:'Pattern', shots:[
+    s('O','Deep ball to the middle',[0.2,22.6],[-0.4,2.4],3,[1.2,1.6],'topspin',{who:FEED}),
+    s('C','Forehand on the rise, inside-out',[-0.9,1.4],[3.2,21.0],4,[0.9,1.3],'topspin',{start:[0,-0.8],cue:'Do not give up ground. Step forward, take it on the rise, a wider base and an early coil.'}),
+    s('O','Rally ball to backhand',[3.4,22.4],[-3.0,2.6],3,[1.0,1.4],'topspin',{who:FEED}),
+    s('C','Backhand cross',[-3.3,0.4],[3.0,21.4],3,[1.2,1.6],'topspin',{cue:'Back to the rally ball, then look for the next middle ball.'})
+  ]}],
+  goal:'Hold the baseline position on deep middle balls.',
+  setup:'Coach feeds deep balls through the middle at rally pace.',
+  format:'5 sets of 8. Coach mixes heavier, higher middle balls.',
+  success:'Contact on or inside the baseline on 7 of 10 middle balls.',
+  prog:['Choice of forehand inside-in','Middle ball with more pace','Live rally from shot 2'],
+  why:'Against aggressive players and moonballers, giving up ground on middle balls is how he gets pushed back.'
+}
+);
+// Link new drills into game plans
+[['aggressive',['fh-rhythm-change','middle-ball-early']],['counterpuncher',['fh-rhythm-change','bh-dtl-change','bh-approach-volley']],
+ ['moonballer',['middle-ball-early']],['bigserver',['second-serve-attack']],['slicer',['bh-approach-volley']],['lefty',['bh-dtl-change']]]
+ .forEach(([pid,ids])=>{const p=PLANS.find(x=>x.id===pid);if(p)ids.forEach(id=>{if(!p.patterns.includes(id))p.patterns.push(id);});});
+
+/* ---------- Removing drills from the Added list (saved on this device) ---------- */
+const RM_KEY='playbook.removedDrills';
+let removed=new Set(), pendingRm=null;
+try{removed=new Set(JSON.parse(localStorage.getItem(RM_KEY)||'[]'));}catch(e){}
+function saveRemoved(){try{localStorage.setItem(RM_KEY,JSON.stringify([...removed]));}catch(e){}}
+const isHidden=d=>d.src==='added'&&removed.has(d.id);
+const visibleDrills=()=>DRILLS.filter(d=>!isHidden(d));
+function removeDrill(id){
+  const d=DRILLS.find(x=>x.id===id); if(!d||d.src!=='added') return;
+  removed.add(id); saveRemoved(); pendingRm=null;
+  if(drill.id===id){selectDrill(visibleDrills()[0].id);return;}
+  renderDrill(); renderRail();
+}
+function restoreDrills(){removed.clear();saveRemoved();renderRail();renderDrill();}
+
+$('dActions').addEventListener('click',e=>{
+  const a=e.target.closest('[data-hrm]'); if(a){pendingRm=a.dataset.hrm+'@head';renderDrill();return;}
+  const y=e.target.closest('[data-hrmyes]'); if(y){removeDrill(y.dataset.hrmyes);return;}
+  if(e.target.closest('[data-hrmno]')){pendingRm=null;renderDrill();}
+});
+
 /* ---------- Boot ---------- */
 (function(){
-  const h=(location.hash||'').slice(1); const d=DRILLS.find(x=>x.id===h); if(d) drill=d;
+  const h=(location.hash||'').slice(1); const d=visibleDrills().find(x=>x.id===h); if(d) drill=d;
   renderRail(); renderLegend(); renderDrill();
   if(d) setView('patterns');
   else if(h.startsWith('tips-')){const t=TIPS.find(x=>'tips-'+x.id===h); if(t) tipCur=t; setView('tips');}
