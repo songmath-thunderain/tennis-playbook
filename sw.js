@@ -1,5 +1,5 @@
 // Offline cache for the Shot Pattern Book. Bump VERSION when the content changes.
-const VERSION = 'playbook-v2';
+const VERSION = 'playbook-v3';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

@@ -766,11 +766,11 @@ function renderDrill(){
    Each module: id, name, group, focus (the 2–3 cues to remember), sections [{h, items}], fix (common faults), drill. */
 const TIPS = [
 { id:'forehand', group:'Groundstrokes', name:'Forehand',
-  focus:['Finish and distance','Left hand stays with the racquet longer','Takeback no more than 180°'],
+  focus:['Finish and distance','Left hand with the racquet through the turn','Takeback no more than 180°'],
   sections:[
     {h:'Preparation', items:[
       'Takeback cannot go past 180°. Keep the racquet more to the side.',
-      'Left hand stays with the racquet longer; don\'t open it up too soon.',
+      'Left hand stays with the racquet through the turn; don\'t open it up too soon. Release it just before contact.',
       'Use the left arm to position the ball, aim at the target, and control the body turn.',
       'Release, then start the forehand: take back, drop the racquet, then swing.',
       'If the ball comes too quick, you can just block it.']},
@@ -800,14 +800,14 @@ const TIPS = [
     {h:'Wide and on the run', items:[
       'Wide and deep: put the weight on the outside leg, open stance.',
       'On the run, swing the leg around so the ball goes forward.',
-      'From a wide backhand, rotate the hip to go crosscourt, or go down the line. Never the middle.',
+      'From a wide backhand, rotate the hip and go crosscourt. Down the line only when balanced or inside the court. Never a short or weak ball to the middle; deep through the middle is fine to neutralize.',
       'Too close to the sideline on the backhand side: hit the backhand, unless it is a perfect inside-in.']},
     {h:'High backhand', items:[
       'Hit it before it jumps high.',
-      'At the baseline keep the racquet low on a high backhand. Inside the court you can keep it high.',
+      'At the baseline, drop the racquet just below the ball, not all the way down. Inside the court you can keep it high.',
       'Still hit through the ball; bring it up more instead of forward.']}
   ],
-  fix:['On floaters the racquet drops too much. Fix it: keep the racquet up and take the ball.'],
+  fix:['On floaters the racquet drops too much. Fix it: drop only to just below the ball, then take it.'],
   drill:null
 },
 { id:'inside', group:'Groundstrokes', name:'Inside-Out & Inside-In',
@@ -817,7 +817,7 @@ const TIPS = [
       'Intense footwork: 3–4 small steps, stay turned sideways, get around the ball. Back up if needed to create space.',
       'Wider base and stay low enough.',
       'Coil early! Avoid a huge racquet takeback.',
-      'Turn the shoulders first, release the left hand early, and watch the takeback.',
+      'Turn the shoulders first with the left hand on the racquet, release it before contact, and watch the takeback.',
       'Swing up. Focus on shape and topspin so the ball bounces high to the opponent\'s backhand.',
       'The body goes toward the direction of the ball; after the shot the body weight faces crosscourt.']},
     {h:'Inside-in forehand', items:[
@@ -867,7 +867,8 @@ const TIPS = [
   sections:[
     {h:'As an attack', items:[
       'Down the line is about speed: hit through the ball, attack mode, go forward.',
-      'Less brush. The racquet can stay higher; hit behind the ball. Aim for the service line.']},
+      'Less brush. The racquet can stay higher; hit behind the ball.',
+      'Don\'t aim too deep: with this much pace, aim around the service line to avoid unforced errors.']},
     {h:'As a change of direction', items:[
       'When the purpose is just to change direction (not attack a short ball), hit higher to get more time to recover.',
       'Don\'t go down the line too often.']},
@@ -896,7 +897,7 @@ const TIPS = [
       'Straighten the arm for the longest lever.',
       'Let the ball travel. Don\'t think about sending it down; send it forward.',
       'Accelerate the racquet head instead of slowing it down. That gives more control.',
-      'After the swing, stop it at the end so the motion stays steady. Don\'t let it go without control.']},
+      'Let the follow-through slow down naturally, then finish balanced and in control. Don\'t brake the arm early.']},
     {h:'Second serve', items:[
       'Toss a little higher and focus on net clearance.',
       'Same racquet speed, just more spin.',
@@ -951,16 +952,16 @@ const TIPS = [
       'Stand wider and go for the ball.',
       'Racquet in front of the head.']},
     {h:'Technique', items:[
-      'No takeback, no turn, strong wrist.',
+      'Small shoulder turn, no backswing, strong wrist.',
       'The step and the volley happen at the same time. Hear the foot stomp on the ground so the legs do the work.',
       'Don\'t use the hand. Keep the racquet face open.',
       'Racquet in front of the body, arm extended, hands tight. Stick to the ball with a very small motion.',
       'After the volley, hold the arm and leg together. Don\'t let the racquet touch the ground.']},
     {h:'Backhand volley', items:[
-      'A shorter backhand slice. The racquet head rises, not drops. Finish at chest level.']},
+      'A shorter backhand slice: keep the racquet head up (above the wrist), short high-to-low punch, finish at chest level.']},
     {h:'First volley (around the service line)', items:[
       'After the approach, put the racquet in front of the body, then go with the first volley in the direction of the approach shot.',
-      'Forehand side: follow through to commit to the ball and hit deeper into the court. Be aggressive.',
+      'Forehand side: commit with the feet moving through the ball, not a bigger swing, and send it deeper into the court. Be aggressive.',
       'Backhand side: extend both hands like flying, go for it, touch the ball and land the feet.']},
     {h:'When to come in', items:[
       'The number one thing for deciding to go to the net is where the ball will be.',
@@ -979,19 +980,21 @@ const TIPS = [
   fix:[], drill:null
 },
 { id:'drop', group:'Net & Touch', name:'Drop Shot & Lob',
-  focus:['Disguise it as a full swing','Wrist tight, hand quiet','Lob to the middle'],
+  focus:['Disguise it as a full swing','Soft underspin, firm wrist','Defensive lob to the middle'],
   sections:[
-    {h:'Current coaching', items:[
-      'Push the ball down the line. No slice.',
-      'Racquet in front, no shoulder turn. Don\'t move the hand; wrist tight.']},
-    {h:'Earlier clinic notes', items:[
-      'Disguise it: look like a backhand swing, step in, go into it, aggressive.',
-      'Racquet goes high to low (down to the waist), just touch the ball. The arm doesn\'t follow through: short swing.',
-      'Let the ball come into the body a little, engage the body, scoop the hand.',
-      'Legs move forward a bit after the shot; lean forward.',
-      'Two ways to take pace off: stop suddenly and release the momentum, or slice all the way through.']},
+    {h:'Disguise', items:[
+      'Look like a normal swing: step in, go into it, be aggressive in the setup.',
+      'Racquet in front, little shoulder turn.']},
+    {h:'Touch', items:[
+      'Slightly open (beveled) racquet face, soft underspin so the ball dies. Not a hard chop all the way through.',
+      'Short swing, high to low (down to about the waist). Just touch the ball; the arm doesn\'t follow through.',
+      'Wrist firm, hand quiet. Let the ball come into the body a little and engage the body.',
+      'Legs move forward a bit after the shot; lean forward.']},
+    {h:'Where', items:[
+      'Away from the opponent, usually down the line, when he is deep behind the baseline.']},
     {h:'Lob', items:[
-      'Lob to the middle.']}
+      'Defensive lob (under pressure): to the middle, high and deep.',
+      'Attacking lob (opponent at the net): over his backhand side, deep.']}
   ],
   fix:[], drill:null
 },
@@ -1014,7 +1017,7 @@ const TIPS = [
   sections:[
     {h:'Mindset', items:[
       'Be aggressive and step up to take advantage of the short ball.',
-      'Aim at the service line and finish quicker.']},
+      'Don\'t aim too deep. The ball has a lot of pace, so aim around the service line to avoid unforced errors, and finish quicker.']},
     {h:'Footwork', items:[
       'Land on the left leg, then bring up the right leg.',
       'Keep a distance from the ball so you don\'t get jammed.']},
@@ -1043,7 +1046,7 @@ const TIPS = [
     {h:'High backhand', items:[
       'Hit it before it jumps high.',
       'You still have to hit it; bring it up more instead of forward.',
-      'At the baseline keep the racquet low; inside the court you can keep it high.']}
+      'At the baseline, drop the racquet just below the ball, not all the way down; inside the court you can keep it high.']}
   ],
   fix:[], drill:null
 },
@@ -1056,7 +1059,7 @@ const TIPS = [
     {h:'Ball in the middle', items:[
       'Go forward and take it more on the rise. Don\'t give up ground too easily.']},
     {h:'Stance', items:[
-      'Ball in front of the body: closed stance.',
+      'Ball in front of the body: closed (neutral) stance.',
       'Far reach to the side: open stance to lift the ball.',
       'If the ball is not too far, add small adjustment steps.']}
   ],
@@ -1212,7 +1215,7 @@ const PLANS = [
   plan:[
     'Keep the ball deep so he cannot approach off it.',
     'Pass with two shots: first a low, dipping ball at his feet, then pass or lob on the next one.',
-    'Lob over his backhand side, deep. Lob to the middle when unsure.',
+    'Attacking lob over his backhand side, deep. When under pressure, a defensive lob to the middle.',
     'Return low at his feet when he serves and volleys.',
     'Hold serve with serve +1 so he can\'t chip and charge your second serve.'],
   avoid:['Trying a clean winner on the first passing shot','Floating high, slow balls that he can volley','Short balls in the middle'],
