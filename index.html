@@ -175,6 +175,7 @@ ul.avoid li::before{content:"✕";position:absolute;left:0;color:var(--fix-ink);
 #dActions{display:flex;align-items:center;gap:6px;font-size:13px}
 .linkbtn{border:0;background:transparent;color:var(--muted);font-size:12.5px;text-decoration:underline;padding:2px 0}
 .linkbtn:hover{color:var(--fix-ink)}
+.newtag{font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:0 5px;margin-left:4px;white-space:nowrap;vertical-align:1px}
 .foot{margin-top:28px;font-size:12.5px;color:var(--muted);max-width:90ch}
 @media (max-width:760px){.stage{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.rail{display:none}.mobile-pick{display:block}.notes{grid-template-columns:minmax(0,1fr)}}
@@ -778,9 +779,10 @@ const TIPS = [
       'Two things on the forehand: finish and distance.',
       'Don\'t get too close to the ball.',
       'Keep the shoulders balanced.',
-      'Racquet speed builds confidence. Without enough racquet speed the ball naturally goes flat.']}
+      'Racquet speed builds confidence. Without enough racquet speed the ball naturally goes flat.',
+      {t:'Be sideways on the forehand and finish the swing to avoid missing wide.',d:'Nov 20'}]}
   ],
-  fix:['Ball goes long: the racquet face is open, or the swing is not finished fast enough.'],
+  fix:['Ball goes long: the racquet face is open, or the swing is not finished fast enough.','Ball goes wide: not sideways, or the swing is not finished.'],
   drill:'Backhands from the forehand corner, forehands from the backhand corner (inside-out).'
 },
 { id:'backhand', group:'Groundstrokes', name:'Backhand',
@@ -897,7 +899,9 @@ const TIPS = [
       'Straighten the arm for the longest lever.',
       'Let the ball travel. Don\'t think about sending it down; send it forward.',
       'Accelerate the racquet head instead of slowing it down. That gives more control.',
-      'Let the follow-through slow down naturally, then finish balanced and in control. Don\'t brake the arm early.']},
+      'Let the follow-through slow down naturally, then finish balanced and in control. Don\'t brake the arm early.',
+      {t:'Bring the arm all the way around behind your back on the swing, and keep the racquet speed up.',d:'Nov 20'},
+      {t:'Flat serve: keep the wrist loose.',d:'Nov 20'}]},
     {h:'Second serve', items:[
       'Toss a little higher and focus on net clearance.',
       'Same racquet speed, just more spin.',
@@ -906,13 +910,15 @@ const TIPS = [
   fix:[], drill:null
 },
 { id:'kick', group:'Serve & Return', name:'Kick Serve',
-  focus:['Left arm waits for the right arm','Up, not forward','Toss as if it will land on your head'],
+  focus:['Sideways, wrist stable','Left arm waits for the right arm','Toss as if it will land on your head'],
   sections:[
     {h:'Fundamentals', items:[
       'Left arm stays up until the right arm comes. The two arms have an appointment.',
       'Don\'t go forward too fast; go up more.',
       'Toss the ball as if it will land on your head.',
-      'Wrist acceleration: brush up the back of the ball.',
+      {t:'Face sideways when serving the kick, with a closed racquet face.',d:'Nov 20'},
+      {t:'Keep the wrist stable on the kick (loose on the flat serve). The brush comes from racquet speed, not a wrist flick.',d:'Nov 20'},
+      'Brush up the back of the ball.',
       'Try hitting with the edge of the racquet to feel the brush.']},
     {h:'Tactics', items:[
       'A short, high kick can pull the opponent off the court.']}
@@ -945,14 +951,18 @@ const TIPS = [
   fix:[], drill:null
 },
 { id:'volley', group:'Net & Touch', name:'Volley',
-  focus:['Split step, then step and volley together','No takeback, strong wrist','Racquet in front'],
+  focus:['Stay low, like sitting in a chair','In front, not late','Racquet out, with space from the body'],
   sections:[
     {h:'At the net', items:[
+      {t:'Stay low, like sitting in a chair.',d:'Nov 20'},
+      {t:'Racquet out in front with space from the body, in the ready position and on the takeback.',d:'Nov 20'},
       'Split step before the volley.',
       'Stand wider and go for the ball.',
       'Racquet in front of the head.']},
     {h:'Technique', items:[
       'Small shoulder turn, no backswing, strong wrist.',
+      {t:'Contact in front, not late.',d:'Nov 20'},
+      {t:'Push from the bottom of the racquet head.',d:'Nov 20'},
       'The step and the volley happen at the same time. Hear the foot stomp on the ground so the legs do the work.',
       'Don\'t use the hand. Keep the racquet face open.',
       'Racquet in front of the body, arm extended, hands tight. Stick to the ball with a very small motion.',
@@ -1023,7 +1033,8 @@ const TIPS = [
       'Keep a distance from the ball so you don\'t get jammed.']},
     {h:'Swing', items:[
       'You can\'t swing halfway: finish the swing. Tell yourself to be strong and use the core for balance. Finish at least at arm level; no need to go over the head.',
-      'Work the hand: flip the hand, use the wrist, roll over the ball and run through it. You have all the space and angle you need.',
+      {t:'High short ball: attack it like a normal shot, flat, not spin.',d:'Nov 20'},
+      'Lower short ball: work the hand. Flip the hand, use the wrist, roll over the ball and run through it. You have all the space and angle you need.',
       'Slow short ball with a choice: take the forehand and play inside-out.']},
     {h:'Backhand short ball', items:[
       'Flip the hand and finish early. No full follow-through, but don\'t stop in the middle.',
@@ -1036,7 +1047,8 @@ const TIPS = [
   sections:[
     {h:'Moving forward', items:[
       'Move up, short takeback, open stance, take the ball on the rise. Power comes from body weight.',
-      'Close it out: finish the swing quicker, not slower.']},
+      'Close it out: finish the swing quicker, not slower.',
+      {t:'High short ball: attack it like a normal shot, flat, not spin.',d:'Nov 20'}]},
     {h:'Moving back', items:[
       'Intense footwork backwards, then topspin it back and finish the swing.',
       'Get behind the ball so you have room to rotate the hip.',
@@ -1075,6 +1087,18 @@ const TIPS = [
       'Manage the ball with the legs, not the arms.']},
     {h:'Recovery', items:[
       'On the first step back to recover, the hips still face the front. Use a cross step instead of turning the hips, so you don\'t get caught behind.']}
+  ],
+  fix:[], drill:null
+},
+{ id:'intensity', group:'Movement & Tactics', name:'Intensity & Mindset',
+  focus:['Steady intensity and spin','Practice at match level','Don\'t relax after a won set'],
+  sections:[
+    {h:'Keep it steady', items:[
+      {t:'Intensity and spin cannot swing from 2 to 10. Keep them steady and high on every ball.',d:'Nov 20'},
+      {t:'If you play at 5, you won\'t get better. Practice at the level you want to play matches.',d:'Nov 20'},
+      'When footwork intensity goes up, racquet speed naturally goes up. Attack with your feet.']},
+    {h:'In matches', items:[
+      'After winning a tight set, keep the same intensity and the same patterns. Don\'t relax.']}
   ],
   fix:[], drill:null
 },
@@ -1128,7 +1152,7 @@ function renderTips(){
     <div class="eyebrow">${t.group}</div>
     <h2>${t.name}</h2>
     <div class="focus"><span class="focus-l">Remember</span>${t.focus.map(f=>`<span class="cuechip">${f}</span>`).join('')}</div>
-    <div class="tip-sections">${t.sections.map(sec=>`<section><h3>${sec.h}</h3><ul>${sec.items.map(x=>`<li>${x}</li>`).join('')}</ul></section>`).join('')}</div>
+    <div class="tip-sections">${t.sections.map(sec=>`<section><h3>${sec.h}</h3><ul>${sec.items.map(x=>`<li>${typeof x==='string'?x:`${x.t} <span class="newtag">${x.d}</span>`}</li>`).join('')}</ul></section>`).join('')}</div>
     ${t.fix.length?`<div class="fixbox"><h3>Fix it</h3><ul>${t.fix.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}
     ${t.drill?`<div class="drillbox"><h3>Drill</h3><p>${t.drill}</p></div>`:''}
     ${used.length?`<div class="usedin"><h3>Used in these patterns</h3><div class="chips">${used.map(d=>`<button class="tbtn" data-gopat="${d.id}">${d.name}</button>`).join('')}</div></div>`:''}`;
